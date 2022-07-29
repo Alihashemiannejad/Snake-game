@@ -1,129 +1,138 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import turtle
+import time
+import random
+delay = 0.1
+score = 0
+high_score = 0
+wn = turtle.Screen()
+wn.title("Snake Game")
+wn.bgcolor("blue")
+wn.setup(width=600, height=600)
+wn.tracer(0)
 
-# C extensions
-*.so
+head = turtle.Turtle()
+head.shape("square")
+head.color("white")
+head.penup()
+head.goto(0, 0)
+head.direction = "Stop"
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+food = turtle.Turtle()
+colors = random.choice(['red', 'green', 'black'])
+shapes = random.choice(['square', 'triangle', 'circle'])
+food.speed(0)
+food.shape(shapes)
+food.color(colors)
+food.penup()
+food.goto(0, 100)
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+pen = turtle.Turtle()
+pen.speed(0)
+pen.shape("square")
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0, 250)
+pen.write("Score : 0 High Score : 0", align="center",
+        font=("candara", 24, "bold"))
+pen.goto(-240, 200)
+pen.write("Manufacturer: Ali Hashemiannejad", font=("candara", 24, "bold"))
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+def goup():
+    if head.direction !="down":
+        head.direction = "up"
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
+def godown():
+    if head.direction != "up":
+        head.direction = "down"
 
-# Translations
-*.mo
-*.pot
+def goleft():
+    if head.direction != "right":
+        head.direction = "left"
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+def goright():
+    if head.direction != "left":
+        head.direction = "right"
 
-# Flask stuff:
-instance/
-.webassets-cache
+def move():
+    if head.direction =="up":
+        y = head.ycor()
+        head.sety(y+20)
+    if head.direction == "down":
+        y = head.ycor()
+        head.sety(y-20)
+    if head.direction == "left":
+        x = head.xcor()
+        head.setx(x-20)
+    if head.direction == "right":
+        x = head.xcor()
+        head.setx(x+20)
 
-# Scrapy stuff:
-.scrapy
+wn.listen()
+wn.onkeypress(goup, "w")
+wn.onkeypress(godown, "s")
+wn.onkeypress(goleft, "a")
+wn.onkeypress(goright, "d")
 
-# Sphinx documentation
-docs/_build/
+segments = []
 
-# PyBuilder
-target/
+while True:
+    wn.update()
+    if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
+        time.sleep(1)
+        head.goto(0, 0)
+        head.direction = "Stop"
+        colors = random.choice(['red', 'blue', 'green'])
+        shapes = random.choice(['square', 'circle'])
+        for segment in segments:
+            segment.goto(1000, 1000)
+        segments.clear()
+        score = 0
+        delay = 0.1
+        pen.clear()
+        pen.write("Score : {} High Score : {} ".format(
+            score, high_score), align="center", font=("candara", 24, "bold"))
+    if head.distance(food) < 20:
+        x = random.randint(-270, 270)
+        y = random.randint(-270, 270)
+        food .goto(x, y)
+        new_segment = turtle.Turtle()
+        new_segment.speed(0)
+        new_segment.shape("square")
+        new_segment.color("orange")
+        new_segment.penup()
+        segments.append(new_segment)
+        delay -= 0.001
+        score += 10
+        if score > high_score:
+            high_score = score
+        pen.clear()
+        pen.write("Score : {} High Score : {} ".format(
+            score, high_score), align="center", font=("candara", 24, "bold"))
+    for index in range(len(segments)-1, 0, -1):
+        x = segments[index-1].xcor()
+        y = segments[index-1].ycor()
+        segments[index].goto(x, y)
+    if len(segments) > 0:
+        x = head.xcor()
+        y = head.ycor()
+        segments[0].goto(x,y)
+    move()
+    for segment in segments:
+        if segment.distance(head) < 20:
+            time.sleep(1)
+            head.goto(0, 0)
+            head.direction = "stop"
+            colors = random.choice(['red', 'blue', 'green'])
+            shapes = random.choice(['square', 'circle'])
+            for segment in segments:
+                segment.goto(1000, 1000)
+            segment.clear()
+            score = 0
+            delay = 0.1
+            pen.clear()
+            pen.write("Score : {} High Score : {} ".format(
+                score, high_score), align="center", font=("candara", 24, "bold"))
+    time.sleep(delay)
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
+wn.mainloop()
